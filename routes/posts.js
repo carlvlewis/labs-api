@@ -9,13 +9,15 @@ router.get('/', (req, res) => {
     rss.items.map((item) => {
       const $ = cheerio.load(item.description);
       const parsedDescription = $('.medium-feed-snippet').text();
+      const parsedImage = $('.medium-feed-image img').attr('src');
 
       const newItem = item;
       newItem.description = parsedDescription;
+      newItem.image = parsedImage;
       return newItem;
     });
 
-    rss.items = rss.items.slice(0,4)
+    rss.items = rss.items.slice(0, 4);
 
     res.json(rss);
   });

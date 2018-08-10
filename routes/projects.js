@@ -1,6 +1,5 @@
 const express = require('express');
 const request = require('request');
-const querystring = require('querystring');
 const slug = require('slug');
 
 const router = express.Router();
@@ -11,15 +10,19 @@ router.get('/', (req, res) => {
   console.log(`Fetching ${url}`); // eslint-disable-line
 
   request({ url, json: true }, (err, response, body) => {
-    let newArray = body.records.map(obj => obj.fields);
-    newArray = newArray.filter(d => d.name);
+    if (!err) {
+      let newArray = body.records.map(obj => obj.fields);
+      newArray = newArray.filter(d => d.name);
 
-    newArray.forEach((project) => {
-      const d = project;
-      d.slug = slug(d.name, { lower: true });
-    });
+      newArray.forEach((project) => {
+        const d = project;
+        d.slug = slug(d.name, { lower: true });
+      });
 
-    res.send(newArray);
+      res.send(newArray);
+    } else {
+      res.status(500).send({ error: err });
+    }
   });
 });
 
